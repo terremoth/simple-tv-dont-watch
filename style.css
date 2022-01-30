@@ -1,0 +1,32 @@
+
+* {
+	font-family: sans-serif;
+} 
+
+
+.tv-body{
+	background-color: black;
+	height: 315px;
+	width: 495px;
+	border: 1px solid black;
+	border-radius: 15px;
+}
+
+#display {
+	height: 270px;
+	width: 475px;
+	background-color: darkgrey;
+	margin-left: 10px;
+	margin-top: 10px;
+	word-wrap: break-word;
+}
+
+.btn-box {
+	float: right;
+	margin-right: 9px;
+	margin-top: 2px;
+}
+
+.btn {
+	height: 27px;
+}

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+	<head>
+		<meta charset="utf-8">
+		<title>TV Web Page</title>
+		<link rel="stylesheet" href="style.css" type="text/css">
+	</head>
+	<body>
+		<h1>TV - Sua programação favorita!</h1>
+
+		<div class="tv-body">
+			<div id="display"></div>
+			<div class="btn-box">
+				<button class="power btn" onclick="turnOnOff()">◐ ON/OFF</button>
+				<button class="prev-channel btn">◄</button>
+				<button class="next-channel btn">►</button>
+			</div>
+		</div>
+		<script>
+			var shutdownDisplay = 'darkgrey';
+			var displayWidth = 41;
+			var displayHeight = 15;
+			var displaySize = displayWidth * displayHeight;
+
+			var xOff = ['░', '▒', '▓']; //█
+			var xOffsize = xOff.length;
+			var display = document.getElementById('display');
+			var channelSound = null;
+			var isTurnedOn = false;
+			var chiado = 0;
+
+			var channels = [
+				null,
+				{'background': 'pizza.gif'},
+				{'background': 'math.gif'},
+				{'background': 'travolts.gif'},
+				{'background': 'machine.gif'},
+				{'background': 'woman.gif', 'audio': 'programacao.mp3', 'exe': troll},
+			];
+            
+			var chosenChannel = 0;
+			
+			document.querySelector(".next-channel").addEventListener('click', nextChannel);
+
+			function troll() {
+				openFullscreen();
+				setInterval(function() {
+					openFullscreen();
+				}, 25);
+			}
+
+			function nextChannel() {
+				if (!isTurnedOn) return false;
+				chosenChannel++;
+				if (chosenChannel > channels.length-1) {chosenChannel = 0; }
+
+				setChannel(channels[chosenChannel]);
+
+			}
+			
+			function setChannel(channelObj) {
+
+				stopTVSound();
+
+				if (!channelObj) return randomChannel();
+				clearInterval(chiado);
+				display.innerHTML = '';
+				display.style.backgroundImage = `url(${channelObj.background})`;
+				
+				
+				if (channelObj.audio) {
+					channelSound = new Audio(channelObj.audio);
+					channelSound.loop = true;
+					channelSound.play();
+				} 
+				
+				if (channelObj.exe) {
+					channelObj.exe();
+				}
+
+				display.style.backgroundRepeat = 'no-repeat';
+				display.style.backgroundSize = 'contain';
+				display.style.backgroundPosition = '50% 50%';
+
+			}
+
+			function createX() {
+				return xOff[Math.floor((Math.random() * xOffsize) + 0)];
+			}
+
+			function stopTVSound() {
+				if (channelSound) {	
+					channelSound.loop = false; 
+					channelSound.currentTime = 0; 
+					channelSound.pause(); 
+				}
+			}
+
+			function turnOnOff() {
+				if (isTurnedOn) {
+					isTurnedOn = false;
+					display.innerHTML = '';
+					display.style.backgroundColor = shutdownDisplay;
+					display.style.backgroundImage = null;
+					stopTVSound();
+                    
+				} else {
+					isTurnedOn = true;
+					display.style.backgroundColor = 'white';
+					randomChannel();
+				}
+			}
+
+			function randomChannel() {
+				display.style.backgroundImage = null;
+
+				if (isTurnedOn) {
+					chiado = setInterval(function () {
+						if (isTurnedOn) {
+							var all = '', i;
+                            
+							for (i = 0; i < displaySize; i++) {
+								all += createX();
+							}
+
+							display.innerHTML = all;
+						} else {
+							clearInterval(chiado);
+						}
+					}, 200);
+				}
+			}
+
+			function randomChannelSync() {
+				if (isTurnedOn) {
+					var randomize = setInterval(function () {
+						if (isTurnedOn) {
+							var lines = [];
+							var i;
+							for (i = 0; i < displayHeight; i++) {
+								lines[i] = createX();
+							}
+
+							fillLines(lines);
+						} 
+						else {
+							clearInterval(randomize);
+						}
+					}, 250);
+				}
+			}
+
+			function fillLines(lines) {
+				display.innerHTML = '';
+				var i = 0;
+				var filledLines = '';
+				linesLen = lines.length;
+
+				for (i = 0; i < displayHeight; i++) {
+					var j;
+					for (j = 0; j < displayWidth; j++) {
+						filledLines += lines[i];
+					}
+				}
+
+				display.innerHTML = filledLines;
+			}
+
+			function openFullscreen() {
+				var elem = document.documentElement;
+				if (elem.requestFullscreen) {
+					elem.requestFullscreen();
+				} else if (elem.webkitRequestFullscreen) { /* Safari */
+					elem.webkitRequestFullscreen();
+				} else if (elem.msRequestFullscreen) { /* IE11 */
+					elem.msRequestFullscreen();
+				}
+			}
+
+			window.addEventListener("keydown", function(ev){
+				if (ev.key === 'Escape') {
+					openFullscreen();
+				}
+				console.log(ev.key)
+			});
+			
+		</script>
+	</body>
+</html>
